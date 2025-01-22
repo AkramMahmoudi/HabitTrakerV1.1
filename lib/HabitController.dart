@@ -11,41 +11,61 @@ class HabitController extends GetxController {
   void onInit() {
     super.onInit();
     fetchTotalScore();
-    fetchHabits();
   }
 
-  void fetchHabits() async {
+  // void fetchAllHabits() async {
+  //   try {
+  //     habits.value = await _supabaseService.getHabits();
+  //   } catch (e) {
+  //     Get.snackbar('Error', e.toString());
+  //   }
+  // }
+
+  // void fetchHabits({required String userId}) async {
+  //   try {
+  //     final fetchedHabits = await _supabaseService.fetchHabits(userId);
+  //     habits.assignAll(fetchedHabits); // Use assignAll to update the observable
+  //   } catch (e) {
+  //     Get.snackbar('Error', 'Failed to fetch habits: $e');
+  //   }
+  // }
+
+  // Fetch habits
+  void fetchHabits({required String userId}) async {
     try {
-      habits.value = await _supabaseService.getHabits();
+      habits.value = await _supabaseService.fetchHabits(userId);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      Get.snackbar('Error', 'Failed to fetch habits: $e');
     }
   }
 
-  void addHabit(String name) async {
+  // Add a habit
+  void addHabit(String name, String userId) async {
     try {
-      await _supabaseService.addHabit(name);
-      fetchHabits();
+      await _supabaseService.addHabit(name, userId);
+      fetchHabits(userId: userId);
       fetchTotalScore();
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void deleteHabit(int id) async {
+  // Delete a habit
+  void deleteHabit(int id, String userId) async {
     try {
-      await _supabaseService.deleteHabit(id);
-      fetchHabits();
+      await _supabaseService.deleteHabit(id, userId);
+      fetchHabits(userId: userId);
       fetchTotalScore();
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void editHabit(int id, String newName) async {
+  // Edit a habit
+  void editHabit(int id, String newName, String userId) async {
     try {
-      await _supabaseService.editHabit(id, newName);
-      fetchHabits();
+      await _supabaseService.editHabit(id, newName, userId);
+      fetchHabits(userId: userId);
       fetchTotalScore();
     } catch (e) {
       Get.snackbar('Error', e.toString());

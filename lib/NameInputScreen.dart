@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'HabitTrackerScreen.dart';
+import 'package:get/get.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NameInputScreen extends StatefulWidget {
   const NameInputScreen({super.key});
@@ -9,21 +11,86 @@ class NameInputScreen extends StatefulWidget {
 
 class _NameInputScreenState extends State<NameInputScreen> {
   final TextEditingController _nameController = TextEditingController();
+  final SupabaseClient _supabase = Supabase.instance.client;
 
-  void _navigateToHabitScreen() {
-    if (_nameController.text.isNotEmpty) {
+  void _signUp() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please enter a name')));
+      return;
+    }
+
+    try {
+      // Check if the user already exists
+      final response = await _supabase
+          .from('users')
+          .select('id')
+          .eq('name', name)
+          .maybeSingle();
+
+      if (response != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User already exists. Please sign in.')),
+        );
+        return;
+      }
+
+      // Create a new user
+      final user = await _supabase
+          .from('users')
+          .insert({'name': name})
+          .select()
+          .single();
+
+      // Navigate to HabitTrackerScreen
       Navigator.push(
         context,
         MaterialPageRoute(
-          builder: (context) => HabitTrackerScreen(
-            guestName: _nameController.text,
-          ),
+          builder: (context) =>
+              HabitTrackerScreen(guestName: name, userId: user['id']),
         ),
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please enter your name')),
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Sign-Up failed: $e')));
+    }
+  }
+
+  void _signIn() async {
+    final name = _nameController.text.trim();
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Please enter a name')));
+      return;
+    }
+
+    try {
+      // Check if the user exists
+      final response = await _supabase
+          .from('users')
+          .select('id')
+          .eq('name', name)
+          .maybeSingle();
+
+      if (response == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('User not found. Please sign up.')),
+        );
+        return;
+      }
+
+      // Navigate to HabitTrackerScreen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) =>
+              HabitTrackerScreen(guestName: name, userId: response['id']),
+        ),
       );
+    } catch (e) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Sign-In failed: $e')));
     }
   }
 
@@ -31,7 +98,7 @@ class _NameInputScreenState extends State<NameInputScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Enter Your Name'),
+        title: Text('Sign Up / Sign In'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,14 +108,19 @@ class _NameInputScreenState extends State<NameInputScreen> {
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
-                labelText: 'Guest Name',
+                labelText: 'Name',
                 border: OutlineInputBorder(),
               ),
             ),
             SizedBox(height: 20),
             ElevatedButton(
-              onPressed: _navigateToHabitScreen,
-              child: Text('Continue'),
+              onPressed: _signUp,
+              child: Text('Sign Up'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: _signIn,
+              child: Text('Sign In'),
             ),
           ],
         ),

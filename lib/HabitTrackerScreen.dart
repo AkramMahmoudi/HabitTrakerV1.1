@@ -5,12 +5,17 @@ import 'HabitController.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
   final String guestName;
+  final String userId;
 
-  const HabitTrackerScreen({super.key, required this.guestName});
+  const HabitTrackerScreen(
+      {super.key, required this.guestName, required this.userId});
 
   @override
   Widget build(BuildContext context) {
     final HabitController _habitController = Get.put(HabitController());
+
+    _habitController.fetchHabits(userId: userId);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Habit Tracker'),
@@ -42,26 +47,7 @@ class HabitTrackerScreen extends StatelessWidget {
                 itemCount: _habitController.habits.length,
                 itemBuilder: (context, index) {
                   final habit = _habitController.habits[index];
-                  // print(habit['id']);
-                  // return ListTile(
-                  //   title: Text(habit['name']),
-                  //   trailing: IconButton(
-                  //     icon: Icon(Icons.delete),
-                  //     onPressed: () =>
-                  //         _habitController.deleteHabit(habit['id']),
-                  //   ),
-                  //   onTap: () {
-                  //     Navigator.push(
-                  //       context,
-                  //       MaterialPageRoute(
-                  //         builder: (context) => HabitDetailScreen(
-                  //           habitId: habit['id'],
-                  //           habitName: habit['name'],
-                  //         ),
-                  //       ),
-                  //     );
-                  //   },
-                  // );
+
                   return ListTile(
                     title: Text(habit['name']),
                     trailing: Row(
@@ -75,7 +61,7 @@ class HabitTrackerScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () =>
-                              _habitController.deleteHabit(habit['id']),
+                              _habitController.deleteHabit(habit['id'], userId),
                         ),
                       ],
                     ),
@@ -121,7 +107,7 @@ class HabitTrackerScreen extends StatelessWidget {
                     onPressed: () {
                       if (_habitController.text.isNotEmpty) {
                         Get.find<HabitController>()
-                            .addHabit(_habitController.text);
+                            .addHabit(_habitController.text, userId);
                         Navigator.pop(context);
                       }
                     },
@@ -163,7 +149,7 @@ class HabitTrackerScreen extends StatelessWidget {
               onPressed: () {
                 if (_editController.text.isNotEmpty) {
                   Get.find<HabitController>()
-                      .editHabit(habitId, _editController.text);
+                      .editHabit(habitId, _editController.text, userId);
                   Navigator.pop(context);
                 }
               },

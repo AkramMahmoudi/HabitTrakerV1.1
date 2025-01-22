@@ -21,28 +21,60 @@ class SupabaseService {
     }
   }
 
-  // Add a habit
-  Future<void> addHabit(String name) async {
+  Future<List<Map<String, dynamic>>> fetchHabits(String userId) async {
+    // try {
+    //   final response =
+    //       await _supabase.from('habits').select('*').eq('user_id', userId);
+
+    //   if (response.isNotEmpty) {
+    //     return response.map((habit) => habit).toList();
+    //   } else {
+    //     return [];
+    //   }
+    // } catch (e) {
+    //   throw Exception('Failed to fetch habits: $e');
+    // }
     try {
-      await _supabase.from('habits').insert({'name': name});
+      final response =
+          await _supabase.from('habits').select('*').eq('user_id', userId);
+      return response.isNotEmpty
+          ? List<Map<String, dynamic>>.from(response)
+          : [];
+    } catch (e) {
+      throw Exception('Failed to fetch habits: $e');
+    }
+  }
+
+  // Add a habit
+  Future<void> addHabit(String name, String userId) async {
+    try {
+      await _supabase.from('habits').insert({'name': name, 'user_id': userId});
     } catch (e) {
       throw Exception('Failed to add habit: $e');
     }
   }
 
   // Edit a habit
-  Future<void> editHabit(int id, String newName) async {
+  Future<void> editHabit(int id, String newName, String userId) async {
     try {
-      await _supabase.from('habits').update({'name': newName}).eq('id', id);
+      await _supabase
+          .from('habits')
+          .update({'name': newName})
+          .eq('id', id)
+          .eq('user_id', userId); // Ensure only the user's habit is updated
     } catch (e) {
       throw Exception('Failed to edit habit: $e');
     }
   }
 
   // Delete a habit
-  Future<void> deleteHabit(int id) async {
+  Future<void> deleteHabit(int id, String userId) async {
     try {
-      await _supabase.from('habits').delete().eq('id', id);
+      await _supabase
+          .from('habits')
+          .delete()
+          .eq('id', id)
+          .eq('user_id', userId); // Ensure only the user's habit is deleted
     } catch (e) {
       throw Exception('Failed to delete habit: $e');
     }
