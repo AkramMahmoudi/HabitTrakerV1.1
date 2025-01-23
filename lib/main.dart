@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'NameInputScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:get/get.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -19,7 +20,8 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Habit Tracker',
       theme: ThemeData(
         primarySwatch: Colors.blue,

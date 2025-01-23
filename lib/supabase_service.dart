@@ -23,8 +23,11 @@ class SupabaseService {
 
   Future<List<Map<String, dynamic>>> fetchHabits(String userId) async {
     try {
-      final response =
-          await _supabase.from('habits').select('*').eq('user_id', userId);
+      final response = await _supabase
+          .from('habits')
+          .select('*')
+          .eq('user_id', userId)
+          .order('created_at', ascending: true);
       return response.isNotEmpty
           ? List<Map<String, dynamic>>.from(response)
           : [];

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'HabitController.dart';
+// import 'HabitController.dart';
+import 'taskController.dart';
 
 class HabitDetailScreen extends StatelessWidget {
   final int habitId;
@@ -14,15 +15,18 @@ class HabitDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final HabitController _habitController = Get.find();
-    _habitController.fetchTasks(habitId, userId);
+    // final HabitController _habitController = Get.find();
+    // final taskController _taskController = Get.find();
+    final taskController _taskController = Get.find<taskController>();
+
+    _taskController.fetchTasks(habitId, userId);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(habitName),
       ),
       body: Obx(() {
-        final tasks = _habitController.tasks[habitId] ?? [];
+        final tasks = _taskController.tasks[habitId] ?? [];
         // print(tasks);
         return tasks.isEmpty
             ? Center(child: Text('No tasks available for $habitName'))
@@ -34,13 +38,13 @@ class HabitDetailScreen extends StatelessWidget {
                     leading: Checkbox(
                       value: task['completed'],
                       onChanged: (value) {
-                        final habitId = _habitController.habits.firstWhere(
+                        final habitId = _taskController.habits.firstWhere(
                             (habit) => habit['id'] == task['habit_id'])['id'];
 
                         // Optimistic UI update
-                        _habitController.updateTaskStateLocally(
+                        _taskController.updateTaskStateLocally(
                             habitId, task['id'], value ?? false);
-                        _habitController.toggleTaskCompletion(
+                        _taskController.toggleTaskCompletion(
                           task['id'],
                           value ?? false,
                           userId,
@@ -54,7 +58,7 @@ class HabitDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
-                            final TextEditingController _taskController =
+                            final TextEditingController _tasktextController =
                                 TextEditingController(text: task['task']);
                             showDialog(
                               context: context,
@@ -62,7 +66,7 @@ class HabitDetailScreen extends StatelessWidget {
                                 return AlertDialog(
                                   title: Text('Edit Task'),
                                   content: TextField(
-                                    controller: _taskController,
+                                    controller: _tasktextController,
                                     decoration: InputDecoration(
                                       labelText: 'Task Name',
                                     ),
@@ -74,10 +78,11 @@ class HabitDetailScreen extends StatelessWidget {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        if (_taskController.text.isNotEmpty) {
-                                          _habitController.editTask(
+                                        if (_tasktextController
+                                            .text.isNotEmpty) {
+                                          _taskController.editTask(
                                             task['id'],
-                                            _taskController.text,
+                                            _tasktextController.text,
                                             userId,
                                           );
                                           Navigator.pop(context);
@@ -94,7 +99,7 @@ class HabitDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            _habitController.deleteTask(
+                            _taskController.deleteTask(
                                 habitId, task['id'], userId);
                           },
                         ),
@@ -106,14 +111,15 @@ class HabitDetailScreen extends StatelessWidget {
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final TextEditingController _taskController = TextEditingController();
+          final TextEditingController _tasktextController =
+              TextEditingController();
           showDialog(
             context: context,
             builder: (context) {
               return AlertDialog(
                 title: Text('Add Task for $habitName'),
                 content: TextField(
-                  controller: _taskController,
+                  controller: _tasktextController,
                   decoration: InputDecoration(
                     labelText: 'Enter Task',
                   ),
@@ -125,9 +131,9 @@ class HabitDetailScreen extends StatelessWidget {
                   ),
                   TextButton(
                     onPressed: () {
-                      if (_taskController.text.isNotEmpty) {
-                        _habitController.addTask(habitId, _taskController.text,
-                            DateTime.now(), userId);
+                      if (_tasktextController.text.isNotEmpty) {
+                        _taskController.addTask(habitId,
+                            _tasktextController.text, DateTime.now(), userId);
                         Navigator.pop(context);
                       }
                     },
