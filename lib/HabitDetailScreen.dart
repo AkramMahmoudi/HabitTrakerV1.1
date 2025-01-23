@@ -23,6 +23,7 @@ class HabitDetailScreen extends StatelessWidget {
       ),
       body: Obx(() {
         final tasks = _habitController.tasks[habitId] ?? [];
+        // print(tasks);
         return tasks.isEmpty
             ? Center(child: Text('No tasks available for $habitName'))
             : ListView.builder(

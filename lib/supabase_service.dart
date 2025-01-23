@@ -71,9 +71,12 @@ class SupabaseService {
   // Fetch tasks for a habit
   Future<List<Map<String, dynamic>>> getTasks(int habitId) async {
     try {
-      final response =
-          await _supabase.from('tasks').select('*').eq('habit_id', habitId);
-
+      final response = await _supabase
+          .from('tasks')
+          .select('*')
+          .eq('habit_id', habitId)
+          .order('created_at', ascending: true);
+      // print(response);
       return response.isNotEmpty
           ? List<Map<String, dynamic>>.from(response)
           : [];
