@@ -22,18 +22,6 @@ class SupabaseService {
   }
 
   Future<List<Map<String, dynamic>>> fetchHabits(String userId) async {
-    // try {
-    //   final response =
-    //       await _supabase.from('habits').select('*').eq('user_id', userId);
-
-    //   if (response.isNotEmpty) {
-    //     return response.map((habit) => habit).toList();
-    //   } else {
-    //     return [];
-    //   }
-    // } catch (e) {
-    //   throw Exception('Failed to fetch habits: $e');
-    // }
     try {
       final response =
           await _supabase.from('habits').select('*').eq('user_id', userId);
@@ -86,11 +74,9 @@ class SupabaseService {
       final response =
           await _supabase.from('tasks').select('*').eq('habit_id', habitId);
 
-      if (response.isNotEmpty) {
-        return response;
-      } else {
-        return [];
-      }
+      return response.isNotEmpty
+          ? List<Map<String, dynamic>>.from(response)
+          : [];
     } catch (e) {
       throw Exception('Failed to fetch tasks: $e');
     }
@@ -109,7 +95,7 @@ class SupabaseService {
     }
   }
 
-  // Edit a task
+// Edit a task
   Future<void> editTask(int id, String newTask) async {
     try {
       await _supabase.from('tasks').update({'task': newTask}).eq('id', id);
@@ -118,7 +104,6 @@ class SupabaseService {
     }
   }
 
-  // Delete a task
   Future<void> deleteTask(int id) async {
     try {
       await _supabase.from('tasks').delete().eq('id', id);
@@ -127,7 +112,6 @@ class SupabaseService {
     }
   }
 
-  // Toggle task completion
   Future<void> toggleTaskCompletion(int id, bool completed) async {
     try {
       await _supabase
@@ -138,37 +122,42 @@ class SupabaseService {
     }
   }
 
-  Future<void> incrementHabitScore(int habitId) async {
+  // Increment habit score
+  Future<void> incrementHabitScore(int habitId, String userId) async {
     try {
-      // Fetch the current score for the habit
       final response = await _supabase
           .from('habits')
           .select('score')
           .eq('id', habitId)
+          .eq('user_id', userId)
           .single();
 
       final currentScore = response['score'] as int;
-
-      // Increment the score
       final newScore = currentScore + 1;
 
-      // Update the score in the database
       await _supabase
           .from('habits')
-          .update({'score': newScore}).eq('id', habitId);
+          .update({'score': newScore})
+          .eq('id', habitId)
+          .eq('user_id', userId);
     } catch (e) {
       throw Exception('Failed to increment habit score: $e');
     }
   }
 
-  Future<void> decrementHabitScore(int habitId) async {
+  Future<void> decrementHabitScore(int habitId, String userId) async {
     try {
       // Fetch the current score for the habit
       final response = await _supabase
           .from('habits')
           .select('score')
           .eq('id', habitId)
+          .eq('user_id', userId) // Ensure the habit belongs to the user
           .single();
+
+      // if (response == null) {
+      //   throw Exception('Habit not found for the provided user.');
+      // }
 
       final currentScore = response['score'] as int;
 
@@ -178,38 +167,20 @@ class SupabaseService {
       // Update the score in the database
       await _supabase
           .from('habits')
-          .update({'score': newScore}).eq('id', habitId);
+          .update({'score': newScore})
+          .eq('id', habitId)
+          .eq('user_id', userId); // Ensure only the user's habit is updated
     } catch (e) {
       throw Exception('Failed to decrement habit score: $e');
     }
   }
 
-  Future<int> getTotalHabitScore() async {
+  Future<int> getTotalHabitScore(String userId) async {
     try {
-      // Fetch RPC response
-      final response = await _supabase.rpc('get_total_habit_score');
-
-      // Log response for debugging
-      // print('Response from Supabase RPC: $response');
-
-      // Ensure response is not null or empty
-      if (response == null || response.isEmpty) {
-        // print('Supabase RPC returned empty or null data.');
-        return 0; // Default to 0
-      }
-
-      // Extract the total_score from the first item in the list
-      final totalScore = response[0]['total_score'];
-      if (totalScore == null) {
-        // print('Error: total_score is null in the response data.');
-        return 0; // Default to 0 if total_score is missing
-      }
-
-      // print('Extracted total_score: $totalScore');
-      return totalScore;
+      final response = await _supabase
+          .rpc('get_total_habit_score', params: {'p_user_id': userId});
+      return response[0]['total_score'];
     } catch (e) {
-      // Handle exceptions and log errors
-      // print('Error in getTotalHabitScore: $e');
       throw Exception('Failed to fetch total habit score: $e');
     }
   }

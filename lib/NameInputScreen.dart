@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'HabitTrackerScreen.dart';
-import 'package:get/get.dart';
+// import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class NameInputScreen extends StatefulWidget {

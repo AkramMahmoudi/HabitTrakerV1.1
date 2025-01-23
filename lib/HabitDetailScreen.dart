@@ -5,17 +5,17 @@ import 'HabitController.dart';
 class HabitDetailScreen extends StatelessWidget {
   final int habitId;
   final String habitName;
-
-  HabitDetailScreen({
-    super.key,
-    required this.habitId,
-    required this.habitName,
-  });
+  final String userId; // Add userId parameter
+  HabitDetailScreen(
+      {super.key,
+      required this.habitId,
+      required this.habitName,
+      required this.userId});
 
   @override
   Widget build(BuildContext context) {
     final HabitController _habitController = Get.find();
-    _habitController.fetchTasks(habitId);
+    _habitController.fetchTasks(habitId, userId);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,6 +36,7 @@ class HabitDetailScreen extends StatelessWidget {
                         _habitController.toggleTaskCompletion(
                           task['id'],
                           value ?? false,
+                          userId,
                         );
                       },
                     ),
@@ -68,7 +69,10 @@ class HabitDetailScreen extends StatelessWidget {
                                       onPressed: () {
                                         if (_taskController.text.isNotEmpty) {
                                           _habitController.editTask(
-                                              task['id'], _taskController.text);
+                                            task['id'],
+                                            _taskController.text,
+                                            userId,
+                                          );
                                           Navigator.pop(context);
                                         }
                                       },
@@ -83,7 +87,8 @@ class HabitDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            _habitController.deleteTask(habitId, task['id']);
+                            _habitController.deleteTask(
+                                habitId, task['id'], userId);
                           },
                         ),
                       ],
@@ -114,8 +119,8 @@ class HabitDetailScreen extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       if (_taskController.text.isNotEmpty) {
-                        _habitController.addTask(
-                            habitId, _taskController.text, DateTime.now());
+                        _habitController.addTask(habitId, _taskController.text,
+                            DateTime.now(), userId);
                         Navigator.pop(context);
                       }
                     },

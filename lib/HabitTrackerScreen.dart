@@ -32,7 +32,7 @@ class HabitTrackerScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 18),
                 ),
                 Obx(() {
-                  print('in obx = ${_habitController.totalScore}');
+                  // print('in obx = ${_habitController.totalScore}');
                   return Text(
                     'Total Score: ${_habitController.totalScore}',
                     style: TextStyle(fontSize: 18),
@@ -72,6 +72,7 @@ class HabitTrackerScreen extends StatelessWidget {
                           builder: (context) => HabitDetailScreen(
                             habitId: habit['id'],
                             habitName: habit['name'],
+                            userId: userId,
                           ),
                         ),
                       );

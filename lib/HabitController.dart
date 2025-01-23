@@ -10,7 +10,7 @@ class HabitController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    fetchTotalScore();
+    // fetchTotalScore();
   }
 
   // void fetchAllHabits() async {
@@ -33,6 +33,7 @@ class HabitController extends GetxController {
   // Fetch habits
   void fetchHabits({required String userId}) async {
     try {
+      fetchTotalScore(userId);
       habits.value = await _supabaseService.fetchHabits(userId);
     } catch (e) {
       Get.snackbar('Error', 'Failed to fetch habits: $e');
@@ -44,7 +45,7 @@ class HabitController extends GetxController {
     try {
       await _supabaseService.addHabit(name, userId);
       fetchHabits(userId: userId);
-      fetchTotalScore();
+      // fetchTotalScore(userId);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -55,7 +56,7 @@ class HabitController extends GetxController {
     try {
       await _supabaseService.deleteHabit(id, userId);
       fetchHabits(userId: userId);
-      fetchTotalScore();
+      // fetchTotalScore(userId);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -66,83 +67,84 @@ class HabitController extends GetxController {
     try {
       await _supabaseService.editHabit(id, newName, userId);
       fetchHabits(userId: userId);
-      fetchTotalScore();
+      // fetchTotalScore(userId);
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void fetchTotalScore() async {
+  void fetchTotalScore(String userId) async {
     try {
-      // print('Updated=');
-      totalScore.value = await _supabaseService.getTotalHabitScore();
-      // print('Updated Total Score: ${totalScore.value}');
+      // print('--------------fetchTotalScore---------------');
+      totalScore.value = await _supabaseService.getTotalHabitScore(userId);
     } catch (e) {
-      // print('Error in fetchTotalScore: $e');
+      // print('----error-----fetchTotalScore---------------');
+      // print('--------------${e}---------------');
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void fetchTasks(int habitId) async {
+  void fetchTasks(int habitId, String userId) async {
     try {
       tasks[habitId] = await _supabaseService.getTasks(habitId);
-      fetchTotalScore();
+
+      fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void addTask(int habitId, String task, DateTime date) async {
+  void addTask(int habitId, String task, DateTime date, String userId) async {
     try {
       await _supabaseService.addTask(habitId, task, date);
-      fetchTasks(habitId);
-      fetchTotalScore();
+      fetchTasks(habitId, userId); // Pass userId
+      fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void deleteTask(int habitId, int taskId) async {
+  void deleteTask(int habitId, int taskId, String userId) async {
     try {
       await _supabaseService.deleteTask(taskId);
-      fetchTasks(habitId);
-      fetchTotalScore();
+      fetchTasks(habitId, userId); // Pass userId
+      // fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void toggleTaskCompletion(int taskId, bool completed) async {
+  void toggleTaskCompletion(int taskId, bool completed, String userId) async {
     try {
-      // Toggle task completion in the database
       await _supabaseService.toggleTaskCompletion(taskId, completed);
 
       // Find the habit ID associated with the task
       final habitId = tasks.keys.firstWhere(
           (id) => tasks[id]?.any((task) => task['id'] == taskId) ?? false);
 
-      // Adjust the habit score based on the task's completion status
       if (completed) {
-        await _supabaseService.incrementHabitScore(habitId);
+        await _supabaseService.incrementHabitScore(habitId, userId);
       } else {
-        await _supabaseService
-            .decrementHabitScore(habitId); // New decrement method
+        await _supabaseService.decrementHabitScore(habitId, userId);
       }
 
-      // Refresh the tasks and total score
-      fetchTasks(habitId);
-      fetchTotalScore();
+      fetchTasks(habitId, userId); // Pass userId
+      // fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
   }
 
-  void editTask(int taskId, String newTask) async {
+  void editTask(int taskId, String newTask, String userId) async {
     try {
       await _supabaseService.editTask(taskId, newTask);
-      fetchTasks(tasks.keys.firstWhere(
-          (id) => tasks[id]?.any((task) => task['id'] == taskId) ?? false));
-      fetchTotalScore();
+
+      // Find the habit ID associated with the task
+      final habitId = tasks.keys.firstWhere(
+          (id) => tasks[id]?.any((task) => task['id'] == taskId) ?? false);
+
+      fetchTasks(habitId, userId); // Pass userId
+      // fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
