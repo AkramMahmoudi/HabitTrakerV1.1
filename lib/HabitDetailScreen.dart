@@ -33,6 +33,12 @@ class HabitDetailScreen extends StatelessWidget {
                     leading: Checkbox(
                       value: task['completed'],
                       onChanged: (value) {
+                        final habitId = _habitController.habits.firstWhere(
+                            (habit) => habit['id'] == task['habit_id'])['id'];
+
+                        // Optimistic UI update
+                        _habitController.updateTaskStateLocally(
+                            habitId, task['id'], value ?? false);
                         _habitController.toggleTaskCompletion(
                           task['id'],
                           value ?? false,

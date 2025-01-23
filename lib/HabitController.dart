@@ -114,6 +114,18 @@ class HabitController extends GetxController {
     }
   }
 
+  void updateTaskStateLocally(int habitId, int taskId, bool isCompleted) {
+    tasks[habitId] = (tasks[habitId] ?? []).map((task) {
+      if (task['id'] == taskId) {
+        return {
+          ...task,
+          'completed': isCompleted,
+        }; // Update only the specific task
+      }
+      return task;
+    }).toList();
+  }
+
   void toggleTaskCompletion(int taskId, bool completed, String userId) async {
     try {
       await _supabaseService.toggleTaskCompletion(taskId, completed);
