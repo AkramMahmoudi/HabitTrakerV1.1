@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 // import 'HabitTrackerScreen.dart';
 import 'package:get/get.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 import 'name_input_controller.dart';
 
 class NameInputScreen extends StatelessWidget {
