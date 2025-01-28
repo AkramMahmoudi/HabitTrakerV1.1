@@ -5,12 +5,23 @@ class HabitController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
   var totalScore = 0.obs;
   var habits = <Map<String, dynamic>>[].obs;
-  var tasks = <int, List<Map<String, dynamic>>>{}.obs; // Habit ID -> Tasks
+  // var tasks = <int, List<Map<String, dynamic>>>{}.obs; // Habit ID -> Tasks
 
   @override
   void onInit() {
     super.onInit();
     // fetchTotalScore();
+  }
+
+  void fetchTotalScore(String userId) async {
+    try {
+      // print('--------------fetchTotalScore---------------');
+      totalScore.value = await _supabaseService.getTotalHabitScore(userId);
+    } catch (e) {
+      // print('----error-----fetchTotalScore---------------');
+      // print('--------------${e}---------------');
+      Get.snackbar('Error', e.toString());
+    }
   }
 
   // Fetch habits
@@ -52,17 +63,6 @@ class HabitController extends GetxController {
       fetchHabits(userId: userId);
       // fetchTotalScore(userId);
     } catch (e) {
-      Get.snackbar('Error', e.toString());
-    }
-  }
-
-  void fetchTotalScore(String userId) async {
-    try {
-      // print('--------------fetchTotalScore---------------');
-      totalScore.value = await _supabaseService.getTotalHabitScore(userId);
-    } catch (e) {
-      // print('----error-----fetchTotalScore---------------');
-      // print('--------------${e}---------------');
       Get.snackbar('Error', e.toString());
     }
   }

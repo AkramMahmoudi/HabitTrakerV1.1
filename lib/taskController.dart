@@ -1,10 +1,11 @@
 import 'package:get/get.dart';
 import 'supabase_service.dart';
+import 'HabitController.dart'; // Import HabitController
 
 class taskController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
-  var totalScore = 0.obs;
-  var habits = <Map<String, dynamic>>[].obs;
+  final HabitController _habitController = Get.find<HabitController>();
+  // var habits = <Map<String, dynamic>>[].obs;
   var tasks = <int, List<Map<String, dynamic>>>{}.obs; // Habit ID -> Tasks
   @override
   void onInit() {
@@ -12,22 +13,11 @@ class taskController extends GetxController {
     // fetchTotalScore();
   }
 
-  void fetchTotalScore(String userId) async {
-    try {
-      // print('--------------fetchTotalScore---------------');
-      totalScore.value = await _supabaseService.getTotalHabitScore(userId);
-    } catch (e) {
-      // print('----error-----fetchTotalScore---------------');
-      // print('--------------${e}---------------');
-      Get.snackbar('Error', e.toString());
-    }
-  }
-
   void fetchTasks(int habitId, String userId) async {
     try {
       tasks[habitId] = await _supabaseService.getTasks(habitId);
 
-      fetchTotalScore(userId); // Pass userId
+      _habitController.fetchTotalScore(userId); // Pass userId
     } catch (e) {
       Get.snackbar('Error', e.toString());
     }
@@ -61,17 +51,19 @@ class taskController extends GetxController {
           'completed': isCompleted,
         }; // Update only the specific task
       }
+      // print('updateTaskStateLocally${tasks[habitId]}');
       return task;
     }).toList();
   }
 
-  void toggleTaskCompletion(int taskId, bool completed, String userId) async {
+  void toggleTaskCompletion(
+      int taskId, bool completed, String userId, int habitId) async {
     try {
       await _supabaseService.toggleTaskCompletion(taskId, completed);
 
       // Find the habit ID associated with the task
-      final habitId = tasks.keys.firstWhere(
-          (id) => tasks[id]?.any((task) => task['id'] == taskId) ?? false);
+      // final habitId = tasks.keys.firstWhere(
+      //     (id) => tasks[id]?.any((task) => task['id'] == taskId) ?? false);
 
       if (completed) {
         await _supabaseService.incrementHabitScore(habitId, userId);

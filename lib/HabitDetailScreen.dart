@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-// import 'HabitController.dart';
+import 'HabitController.dart';
 import 'taskController.dart';
 
 class HabitDetailScreen extends StatelessWidget {
@@ -15,7 +15,7 @@ class HabitDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final HabitController _habitController = Get.find();
+    final HabitController _habitController = Get.find<HabitController>();
     // final taskController _taskController = Get.find();
     final taskController _taskController = Get.find<taskController>();
 
@@ -38,17 +38,16 @@ class HabitDetailScreen extends StatelessWidget {
                     leading: Checkbox(
                       value: task['completed'],
                       onChanged: (value) {
-                        final habitId = _taskController.habits.firstWhere(
+                        // print("++++++++++++++");
+                        final habitId = _habitController.habits.firstWhere(
                             (habit) => habit['id'] == task['habit_id'])['id'];
-
+                        // print(habitId);
                         // Optimistic UI update
                         _taskController.updateTaskStateLocally(
                             habitId, task['id'], value ?? false);
+
                         _taskController.toggleTaskCompletion(
-                          task['id'],
-                          value ?? false,
-                          userId,
-                        );
+                            task['id'], value ?? false, userId, habitId);
                       },
                     ),
                     title: Text(task['task']),

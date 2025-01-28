@@ -140,7 +140,6 @@ class SupabaseService {
 
       final currentScore = response['score'] as int;
       final newScore = currentScore + 1;
-
       await _supabase
           .from('habits')
           .update({'score': newScore})
@@ -169,7 +168,6 @@ class SupabaseService {
 
       // Decrement the score if it's greater than 0
       final newScore = (currentScore > 0) ? currentScore - 1 : 0;
-
       // Update the score in the database
       await _supabase
           .from('habits')
@@ -185,6 +183,7 @@ class SupabaseService {
     try {
       final response = await _supabase
           .rpc('get_total_habit_score', params: {'p_user_id': userId});
+      // print(response[0]['total_score']);
       return response[0]['total_score'];
     } catch (e) {
       throw Exception('Failed to fetch total habit score: $e');
