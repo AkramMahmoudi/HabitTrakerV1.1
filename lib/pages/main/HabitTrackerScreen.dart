@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import '../task/HabitDetailScreen.dart';
 import 'HabitController.dart';
 import '../task/taskController.dart';
-import '../../routes/app_pages.dart';
+import '../../routes/app_routes.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
   // final String guestName;
