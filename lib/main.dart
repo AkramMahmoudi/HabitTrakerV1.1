@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 import 'routes/app_routes.dart';
-
+import 'routes/app_pages.dart';
 // void main() {
 //   runApp(MyApp());
 // }
@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: AppRoutes.login, // Set the initial screen
-      getPages: AppRoutes.routes,
+      getPages: AppPages.routes,
     );
   }
 }
