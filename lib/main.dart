@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'NameInputScreen.dart';
+import 'pages/login/NameInputScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
 

@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'supabase_service.dart';
+import '../../supabase_service.dart';
 
 class HabitController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();

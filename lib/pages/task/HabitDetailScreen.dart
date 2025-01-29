@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'HabitController.dart';
-import 'taskController.dart';
+import '../main/HabitController.dart';
+import '../../taskController.dart';
 
 class HabitDetailScreen extends StatelessWidget {
   final int habitId;

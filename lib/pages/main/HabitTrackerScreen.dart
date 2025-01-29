@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'HabitDetailScreen.dart';
+import '../task/HabitDetailScreen.dart';
 import 'HabitController.dart';
-import 'taskController.dart';
+import '../../taskController.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
   final String guestName;
