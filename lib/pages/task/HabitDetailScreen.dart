@@ -1,35 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../main/HabitController.dart';
-import '../../taskController.dart';
+import 'taskController.dart';
 
 class HabitDetailScreen extends StatelessWidget {
-  final int habitId;
-  final String habitName;
-  final String userId; // Add userId parameter
-  HabitDetailScreen(
-      {super.key,
-      required this.habitId,
-      required this.habitName,
-      required this.userId});
+  const HabitDetailScreen({
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     final HabitController _habitController = Get.find<HabitController>();
-    // final taskController _taskController = Get.find();
-    final taskController _taskController = Get.find<taskController>();
-
-    _taskController.fetchTasks(habitId, userId);
+    final taskController _taskController = Get.put(taskController());
+    _taskController.fetchTasks(_taskController.habitId, _taskController.userId);
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(habitName),
+        title: Text(_taskController.habitName),
       ),
       body: Obx(() {
-        final tasks = _taskController.tasks[habitId] ?? [];
+        final tasks = _taskController.tasks[_taskController.habitId] ?? [];
         // print(tasks);
         return tasks.isEmpty
-            ? Center(child: Text('No tasks available for $habitName'))
+            ? Center(
+                child:
+                    Text('No tasks available for ${_taskController.habitName}'))
             : ListView.builder(
                 itemCount: tasks.length,
                 itemBuilder: (context, index) {
@@ -46,8 +41,8 @@ class HabitDetailScreen extends StatelessWidget {
                         _taskController.updateTaskStateLocally(
                             habitId, task['id'], value ?? false);
 
-                        _taskController.toggleTaskCompletion(
-                            task['id'], value ?? false, userId, habitId);
+                        _taskController.toggleTaskCompletion(task['id'],
+                            value ?? false, _taskController.userId, habitId);
                       },
                     ),
                     title: Text(task['task']),
@@ -82,7 +77,7 @@ class HabitDetailScreen extends StatelessWidget {
                                           _taskController.editTask(
                                             task['id'],
                                             _tasktextController.text,
-                                            userId,
+                                            _taskController.userId,
                                           );
                                           Navigator.pop(context);
                                         }
@@ -98,8 +93,8 @@ class HabitDetailScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () {
-                            _taskController.deleteTask(
-                                habitId, task['id'], userId);
+                            _taskController.deleteTask(_taskController.habitId,
+                                task['id'], _taskController.userId);
                           },
                         ),
                       ],
@@ -116,7 +111,7 @@ class HabitDetailScreen extends StatelessWidget {
             context: context,
             builder: (context) {
               return AlertDialog(
-                title: Text('Add Task for $habitName'),
+                title: Text('Add Task for ${_taskController.habitName}'),
                 content: TextField(
                   controller: _tasktextController,
                   decoration: InputDecoration(
@@ -131,8 +126,11 @@ class HabitDetailScreen extends StatelessWidget {
                   TextButton(
                     onPressed: () {
                       if (_tasktextController.text.isNotEmpty) {
-                        _taskController.addTask(habitId,
-                            _tasktextController.text, DateTime.now(), userId);
+                        _taskController.addTask(
+                            _taskController.habitId,
+                            _tasktextController.text,
+                            DateTime.now(),
+                            _taskController.userId);
                         Navigator.pop(context);
                       }
                     },

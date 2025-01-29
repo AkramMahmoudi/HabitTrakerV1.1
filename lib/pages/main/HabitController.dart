@@ -7,10 +7,20 @@ class HabitController extends GetxController {
   var habits = <Map<String, dynamic>>[].obs;
   // var tasks = <int, List<Map<String, dynamic>>>{}.obs; // Habit ID -> Tasks
 
+  String guestName = '';
+  String userId = '';
+
   @override
   void onInit() {
     super.onInit();
     // fetchTotalScore();
+    // Retrieve arguments and set them in the controller
+    if (Get.arguments != null) {
+      var args = Get.arguments as Map<String, dynamic>;
+      guestName = args['guestName'] ?? '';
+      userId = args['userId'] ?? '';
+    }
+    // fetchHabits(userId: userId.string);
   }
 
   void fetchTotalScore(String userId) async {

@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../main/HabitTrackerScreen.dart';
+import '../../routes/routes.dart';
 
 class NameInputController extends GetxController {
   final TextEditingController nameController = TextEditingController();
@@ -37,7 +38,11 @@ class NameInputController extends GetxController {
           .single();
 
       // Navigate to HabitTrackerScreen
-      Get.to(() => HabitTrackerScreen(guestName: name, userId: user['id']));
+      // Get.to(() => HabitTrackerScreen(guestName: name, userId: user['id']));
+      Get.toNamed(AppRoutes.home, arguments: {
+        'guestName': name,
+        'userId': user['id'],
+      });
     } catch (e) {
       Get.snackbar('Error', 'Sign-Up failed: $e',
           snackPosition: SnackPosition.BOTTOM);
@@ -67,7 +72,11 @@ class NameInputController extends GetxController {
       }
 
       // Navigate to HabitTrackerScreen
-      Get.to(() => HabitTrackerScreen(guestName: name, userId: response['id']));
+      // Get.to(() => HabitTrackerScreen(guestName: name, userId: response['id']));
+      Get.toNamed(AppRoutes.home, arguments: {
+        'guestName': name,
+        'userId': response['id'],
+      });
     } catch (e) {
       print(e);
       Get.snackbar('Error', 'Sign-In failed: $e',

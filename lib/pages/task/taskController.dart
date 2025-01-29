@@ -1,16 +1,25 @@
 import 'package:get/get.dart';
-import 'supabase_service.dart';
-import 'pages/main/HabitController.dart'; // Import HabitController
+import '../../supabase_service.dart';
+import '../main/HabitController.dart'; // Import HabitController
 
 class taskController extends GetxController {
   final SupabaseService _supabaseService = SupabaseService();
   final HabitController _habitController = Get.find<HabitController>();
   // var habits = <Map<String, dynamic>>[].obs;
   var tasks = <int, List<Map<String, dynamic>>>{}.obs; // Habit ID -> Tasks
+  int habitId = 0;
+  String habitName = "";
+  String userId = "";
   @override
   void onInit() {
     super.onInit();
     // fetchTotalScore();
+    if (Get.arguments != null) {
+      var args = Get.arguments as Map<String, dynamic>;
+      habitId = args['habitId'];
+      habitName = args['habitName'] ?? '';
+      userId = args['userId'] ?? '';
+    }
   }
 
   void fetchTasks(int habitId, String userId) async {

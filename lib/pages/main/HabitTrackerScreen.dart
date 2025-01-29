@@ -2,20 +2,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../task/HabitDetailScreen.dart';
 import 'HabitController.dart';
-import '../../taskController.dart';
+import '../task/taskController.dart';
+import '../../routes/routes.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
-  final String guestName;
-  final String userId;
+  // final String guestName;
+  // final String userId;
 
-  const HabitTrackerScreen(
-      {super.key, required this.guestName, required this.userId});
+  const HabitTrackerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final HabitController _habitController = Get.put(HabitController());
-    final taskController _taskController = Get.put(taskController());
-    _habitController.fetchHabits(userId: userId);
+    // problem in taskcontroller
+
+    _habitController.fetchHabits(userId: _habitController.userId);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,7 +30,7 @@ class HabitTrackerScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'Guest: $guestName',
+                  'Guest: ${_habitController.guestName}',
                   style: TextStyle(fontSize: 18),
                 ),
                 Obx(() {
@@ -55,25 +56,64 @@ class HabitTrackerScreen extends StatelessWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () =>
-                              _showEditHabitDialog(habit['id'], habit['name']),
-                        ),
+                            icon: Icon(Icons.edit),
+                            onPressed: () {
+                              final TextEditingController _editController =
+                                  TextEditingController(text: habit['name']);
+
+                              Get.dialog(
+                                AlertDialog(
+                                  title: Text('Edit Habit'),
+                                  content: TextField(
+                                    controller: _editController,
+                                    decoration: InputDecoration(
+                                      labelText: 'Update Habit Name',
+                                    ),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(),
+                                      child: Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        if (_editController.text.isNotEmpty) {
+                                          Get.find<HabitController>().editHabit(
+                                              habit['id'],
+                                              _editController.text,
+                                              _habitController.userId);
+                                          Get.back();
+                                        }
+                                      },
+                                      child: Text('Save'),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            // _showEditHabitDialog(habit['id'], habit['name']),
+                            ),
                         IconButton(
                           icon: Icon(Icons.delete),
-                          onPressed: () =>
-                              _habitController.deleteHabit(habit['id'], userId),
+                          onPressed: () => _habitController.deleteHabit(
+                              habit['id'], _habitController.userId),
                         ),
                       ],
                     ),
                     onTap: () {
-                      Get.to(
-                        () => HabitDetailScreen(
-                          habitId: habit['id'],
-                          habitName: habit['name'],
-                          userId: userId,
-                        ),
-                      );
+                      // Get.to(
+                      //   () => HabitDetailScreen(
+                      //     habitId: habit['id'],
+                      //     habitName: habit['name'],
+                      //     userId: userId,
+                      //   ),
+                      // );
+
+                      Get.toNamed(AppRoutes.task, arguments: {
+                        'habitId': habit['id'],
+                        'habitName': habit['name'],
+                        'userId': _habitController.userId,
+                      });
                     },
                   );
                 },
@@ -84,14 +124,14 @@ class HabitTrackerScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          final TextEditingController _habitController =
+          final TextEditingController _habitControllertext =
               TextEditingController();
 
           Get.dialog(
             AlertDialog(
               title: Text('Add Habit'),
               content: TextField(
-                controller: _habitController,
+                controller: _habitControllertext,
                 decoration: InputDecoration(labelText: 'Enter Habit'),
               ),
               actions: [
@@ -101,9 +141,9 @@ class HabitTrackerScreen extends StatelessWidget {
                 ),
                 TextButton(
                   onPressed: () {
-                    if (_habitController.text.isNotEmpty) {
-                      Get.find<HabitController>()
-                          .addHabit(_habitController.text, userId);
+                    if (_habitControllertext.text.isNotEmpty) {
+                      Get.find<HabitController>().addHabit(
+                          _habitControllertext.text, _habitController.userId);
                       Get.back();
                     }
                   },
@@ -114,39 +154,6 @@ class HabitTrackerScreen extends StatelessWidget {
           );
         },
         child: Icon(Icons.add),
-      ),
-    );
-  }
-
-  void _showEditHabitDialog(int habitId, String habitName) {
-    final TextEditingController _editController =
-        TextEditingController(text: habitName);
-
-    Get.dialog(
-      AlertDialog(
-        title: Text('Edit Habit'),
-        content: TextField(
-          controller: _editController,
-          decoration: InputDecoration(
-            labelText: 'Update Habit Name',
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Get.back(),
-            child: Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () {
-              if (_editController.text.isNotEmpty) {
-                Get.find<HabitController>()
-                    .editHabit(habitId, _editController.text, userId);
-                Get.back();
-              }
-            },
-            child: Text('Save'),
-          ),
-        ],
       ),
     );
   }
