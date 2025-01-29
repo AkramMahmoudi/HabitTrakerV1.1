@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 // import 'pages/login/NameInputScreen.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:get/get.dart';
-import 'routes/routes.dart';
+import 'routes/app_pages.dart';
 
 // void main() {
 //   runApp(MyApp());

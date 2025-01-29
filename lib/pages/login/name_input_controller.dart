@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter/material.dart';
 import '../main/HabitTrackerScreen.dart';
-import '../../routes/routes.dart';
+import '../../routes/app_pages.dart';
 
 class NameInputController extends GetxController {
   final TextEditingController nameController = TextEditingController();
