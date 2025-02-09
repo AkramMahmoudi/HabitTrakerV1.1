@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../task/HabitDetailScreen.dart';
 import 'HabitController.dart';
-import '../task/taskController.dart';
 import '../../routes/app_routes.dart';
 
 class HabitTrackerScreen extends StatelessWidget {
@@ -29,9 +27,17 @@ class HabitTrackerScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  'Guest: ${_habitController.guestName}',
-                  style: TextStyle(fontSize: 18),
+                // Text(
+                //   'Guest: ${_habitController.guestName}',
+                //   // 'Guest: ',
+                //   style: TextStyle(fontSize: 15),
+                // ),
+                Expanded(
+                  child: Text(
+                    _habitController.guestName,
+                    style: TextStyle(fontSize: 18),
+                    overflow: TextOverflow.ellipsis, // تقليل النص عند الحاجة
+                  ),
                 ),
                 Obx(() {
                   // print('in obx = ${_habitController.totalScore}');

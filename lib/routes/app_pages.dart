@@ -5,9 +5,6 @@ import '../pages/task/HabitDetailScreen.dart';
 import 'app_routes.dart';
 
 class AppPages {
-  // static const String login = '/login';
-  // static const String home = '/main';
-  // static const String task = '/task';
   static List<GetPage> routes = [
     GetPage(
       name: AppRoutes.login,

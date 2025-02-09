@@ -22,7 +22,16 @@ class NameInputScreen extends StatelessWidget {
             TextField(
               controller: controller.nameController,
               decoration: const InputDecoration(
-                labelText: 'Name',
+                labelText: 'Email',
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 20),
+            TextField(
+              controller: controller.passwordController,
+              obscureText: true, // إخفاء كلمة المرور
+              decoration: const InputDecoration(
+                labelText: 'Password',
                 border: OutlineInputBorder(),
               ),
             ),
